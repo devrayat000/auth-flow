@@ -10,30 +10,29 @@ import {
 
 @Entity('local_user')
 export default class LocalUser extends BaseEntity implements ILocalUser {
-  @PrimaryColumn('uuid', { generated: true })
+  @PrimaryColumn('uuid', { generated: 'uuid', insert: false, update: false })
   _id: string
 
-  @Column('varchar', { unique: true })
+  @Column({ type: 'varchar', unique: true, update: false })
   @Index('local_user_email_index', { unique: true })
   email: string
 
-  @Column('varchar', { name: 'first_name' })
+  @Column('varchar')
   firstName: string
 
-  @Column('varchar', { name: 'last_name' })
+  @Column('varchar')
   lastName: string
 
   @Column({
     type: 'varchar',
-    name: 'full_name',
     generatedType: 'STORED',
-    asExpression: `concat(first_name, ' ', last_name)`,
+    asExpression: `first_name || ' ' || last_name`,
     insert: false,
     update: false,
   })
   fullName: string
 
-  @Column('varchar', { name: 'photo_url' })
+  @Column('varchar')
   photoUrl: string
 
   @Column('date')
@@ -50,21 +49,6 @@ export default class LocalUser extends BaseEntity implements ILocalUser {
 
   @UpdateDateColumn()
   updatedAt: Date
-
-  @Column('boolean', { default: false })
-  verified: boolean
-
-  @Column('varchar', { nullable: true })
-  verificationToken?: string | undefined
-
-  @Column('varchar', { nullable: true })
-  verificationTokenExpiry?: number | undefined
-
-  @Column('varchar', { nullable: true })
-  passwordResetToken?: string | undefined
-
-  @Column('varchar', { nullable: true })
-  passwordResetTokenExpiry?: string | undefined
 }
 
 export interface ILocalUser {
@@ -79,9 +63,8 @@ export interface ILocalUser {
   salt: string
   createdAt: Date
   updatedAt: Date
-  verified: boolean
   verificationToken?: string
   verificationTokenExpiry?: number
   passwordResetToken?: string
-  passwordResetTokenExpiry?: string
+  passwordResetTokenExpiry?: number
 }
