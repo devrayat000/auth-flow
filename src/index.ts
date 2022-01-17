@@ -1,6 +1,7 @@
 import express from 'express'
 import cookieParser from 'cookie-parser'
 import logger from 'morgan'
+import connection from '$utils/connection'
 
 // import indexRouter from "./routes/index";
 // import usersRouter from "./routes/users";
@@ -25,6 +26,8 @@ app.get('/', async (req, res) => {
 })
 
 async function listen() {
+  await connection()
+
   app.listen(port, () => {
     console.log(`>_ http://localhost:${port}`)
   })
