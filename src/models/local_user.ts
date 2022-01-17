@@ -7,6 +7,7 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm'
+import { hash, genSalt, compare } from 'bcryptjs'
 
 @Entity('local_user')
 export default class LocalUser extends BaseEntity implements ILocalUser {
@@ -49,6 +50,19 @@ export default class LocalUser extends BaseEntity implements ILocalUser {
 
   @UpdateDateColumn()
   updatedAt: Date
+
+  private static readonly SALT_ROUND = 10
+
+  static async hashPassword(payload: string) {
+    const salt = await genSalt(this.SALT_ROUND)
+    const hashed = await hash(payload, salt)
+
+    return { salt, hash: hashed }
+  }
+
+  async verifyPassword(payload: string) {
+    return await compare(payload, this.hash)
+  }
 }
 
 export interface ILocalUser {
@@ -63,8 +77,4 @@ export interface ILocalUser {
   salt: string
   createdAt: Date
   updatedAt: Date
-  verificationToken?: string
-  verificationTokenExpiry?: number
-  passwordResetToken?: string
-  passwordResetTokenExpiry?: number
 }

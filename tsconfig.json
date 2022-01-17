@@ -19,13 +19,12 @@
     "strictPropertyInitialization": false,
     "strict": true,
     "skipLibCheck": true,
-    "baseUrl": "./src",
     "paths": {
-      "$models/*": ["models/*"],
-      "$passport/*": ["passport/*"],
-      "$routes/*": ["routes/*"],
-      "$utils/*": ["utils/*"],
-      "$types/*": ["types/*"],
+      "$models/*": ["./src/models/*"],
+      "$passport/*": ["./src/passport/*"],
+      "$routes/*": ["./src/routes/*"],
+      "$utils/*": ["./src/utils/*"],
+      "$types/*": ["./src/types/*"],
     },
     "typeRoots": ["./src/types/global.d.ts"]
   },
