@@ -2,9 +2,8 @@ import express from 'express'
 import cookieParser from 'cookie-parser'
 import logger from 'morgan'
 import connection from '$utils/connection'
-
-// import indexRouter from "./routes/index";
-// import usersRouter from "./routes/users";
+import session from 'express-session'
+import { cacheClient, RedisStore } from './services/cache'
 
 const app = express()
 
@@ -15,7 +14,18 @@ app.set('port', port)
 app.use(logger('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
-app.use(cookieParser())
+app.use(cookieParser(process.env.COOKIE_SECRET ?? 'super_cookie_secret'))
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET ?? 'super_session_secret',
+    store: new RedisStore({ client: cacheClient }),
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      signed: process.env.NODE_ENV === 'production',
+    },
+  })
+)
+
 app.use(express.static('public'))
 
 // app.use("/", indexRouter);
@@ -26,11 +36,11 @@ app.get('/', async (req, res) => {
 })
 
 async function listen() {
-  await connection()
+  await Promise.all([connection(), cacheClient.connect()])
 
-  app.listen(port, () => {
-    console.log(`>_ http://localhost:${port}`)
-  })
+  await new Promise<void>(r => app.listen(port, r))
+
+  console.log(`>_ http://localhost:${port}`)
   return app
 }
 
