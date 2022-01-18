@@ -17,4 +17,8 @@ localRouter.post(
   loginController
 )
 
+localRouter.get('/user', async (req, res) => {
+  res.json({ user: req.user })
+})
+
 export default localRouter

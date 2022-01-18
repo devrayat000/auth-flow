@@ -19,21 +19,23 @@
     "strictPropertyInitialization": false,
     "strict": true,
     "skipLibCheck": true,
+    "baseUrl": ".",
     "paths": {
-      "$models/*": ["./src/models/*"],
-      "$passport/*": ["./src/passport/*"],
-      "$routes/*": ["./src/routes/*"],
-      "$utils/*": ["./src/utils/*"],
-      "$types/*": ["./src/types/*"],
-      "$services/*": ["./src/services/*"],
+      "$models/*": ["src/models/*"],
+      "$passport/*": ["src/passport/*"],
+      "$routes/*": ["src/routes/*"],
+      "$utils/*": ["src/utils/*"],
+      "$types/*": ["src/types/*"],
+      "$services/*": ["src/services/*"],
     },
-    "typeRoots": ["./src/types/global.d.ts"]
+    "typeRoots": ["src/types/global.d.ts"]
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"],
   "ts-node": {
     "compilerOptions": {
       "module": "commonjs"
-    }
+    },
+    "require": ["tsconfig-paths/register"]
   }
 }

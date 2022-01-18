@@ -8,6 +8,12 @@ export const registerValidator = yup.object().shape({
   birthDate: yup
     .string()
     .required()
-    .transform(str => moment(str, 'YYYY-MM-DD')),
+    .transform(str => {
+      console.log(str)
+
+      const res = moment(str).format('YYYY-MM-DD')
+      console.log(res)
+      return res
+    }),
   password: yup.string().required().trim(),
 })

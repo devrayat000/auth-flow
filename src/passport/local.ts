@@ -1,3 +1,4 @@
+import AllRecipeUser from '$models/all_recipe_user'
 import LocalUser from '$models/local_user'
 import _passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
@@ -16,8 +17,9 @@ export default async function initializeLocal(
       async (email, password, done) => {
         try {
           const user = await getConnection()
-            .createQueryBuilder(LocalUser, 'user')
-            .where('user.email = :email', { email })
+            .createQueryBuilder(LocalUser, 'local')
+            .where('local.email = :email', { email })
+            .innerJoinAndSelect('local.allRecipeUser', 'all_user')
             .limit(1)
             .getOne()
 
@@ -25,7 +27,7 @@ export default async function initializeLocal(
             done(null, false, { message: 'User not found!' })
           } else if (!(await user.verifyPassword(password))) {
             done(null, false, { message: 'Password incorrect!' })
-          } else done(null, user)
+          } else done(null, user.allRecipeUser)
         } catch (error) {
           done(error)
         }

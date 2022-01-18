@@ -62,6 +62,7 @@ const config = {
   port: 5432,
   database: 'basic-auth',
   namingStrategy: new MyNaming(),
+  migrationsTableName: 'auth-migrations',
   entities: ['./src/models/**/*.ts'],
   migrations: ['./src/migrations/*.ts'],
   logging: ['error', 'query', 'migration'],

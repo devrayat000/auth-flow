@@ -22,6 +22,8 @@ app.use(
   session({
     secret: process.env.SESSION_SECRET ?? 'super_session_secret',
     store: cacheStore,
+    resave: false,
+    saveUninitialized: true,
     cookie: {
       secure: process.env.NODE_ENV === 'production',
       signed: process.env.NODE_ENV === 'production',

@@ -12,6 +12,8 @@ passportApp.use(passport.session())
 
 passport.serializeUser<string>((user, done) => {
   try {
+    console.log(user)
+
     done(null, user.userId)
   } catch (error) {
     done(error)

@@ -3,15 +3,20 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Generated,
   Index,
+  JoinColumn,
+  OneToOne,
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm'
 import { hash, genSalt, compare } from 'bcryptjs'
+import AllRecipeUser from './all_recipe_user'
 
 @Entity('local_user')
 export default class LocalUser extends BaseEntity implements ILocalUser {
-  @PrimaryColumn('uuid', { generated: 'uuid', insert: false, update: false })
+  @PrimaryColumn('uuid', { update: false })
+  @Generated('uuid')
   _id: string
 
   @Column({ type: 'varchar', unique: true, update: false })
@@ -50,6 +55,10 @@ export default class LocalUser extends BaseEntity implements ILocalUser {
 
   @UpdateDateColumn()
   updatedAt: Date
+
+  @OneToOne(_ => AllRecipeUser)
+  @JoinColumn({ name: '_id' })
+  allRecipeUser: AllRecipeUser
 
   private static readonly SALT_ROUND = 10
 
