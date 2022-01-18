@@ -4,6 +4,7 @@ import logger from 'morgan'
 import connection from '$utils/connection'
 import session from 'express-session'
 import { cacheClient, RedisStore } from './services/cache'
+import passportApp from './passport'
 
 const app = express()
 
@@ -28,8 +29,8 @@ app.use(
 
 app.use(express.static('public'))
 
-// app.use("/", indexRouter);
-// app.use("/users", usersRouter);
+// Passport app
+app.use(passportApp)
 
 app.get('/', async (req, res) => {
   res.send('Working!')

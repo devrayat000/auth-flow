@@ -1,18 +1,28 @@
-import { BaseEntity, Column, Entity, Index, PrimaryColumn } from 'typeorm'
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  OneToOne,
+} from 'typeorm'
+
+import LocalUser from './local_user'
 
 @Entity('local_user')
 export default class LocalPasswordReset
   extends BaseEntity
   implements ILocalPasswordReset
 {
-  @PrimaryColumn('uuid', { update: false })
-  _id: string
+  @OneToOne(_ => LocalUser, { primary: true, onDelete: 'CASCADE' })
+  @JoinColumn()
+  userId: string
 
-  @Column({ type: 'varchar', unique: true, update: false })
-  @Index({ unique: true })
+  @Column({ type: 'varchar', update: false })
   email: string
 
-  @Column('varchar')
+  @Column('varchar', { unique: true })
+  @Index({ unique: true })
   passwordResetToken: string
 
   @Column('bigint')
@@ -20,7 +30,7 @@ export default class LocalPasswordReset
 }
 
 export interface ILocalPasswordReset {
-  _id: string
+  userId: string
   email: string
   passwordResetToken: string
   passwordResetTokenExpiry: number

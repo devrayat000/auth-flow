@@ -1,14 +1,24 @@
-import { BaseEntity, Column, Entity, Index, PrimaryColumn } from 'typeorm'
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  OneToOne,
+} from 'typeorm'
+
+import LocalUser from './local_user'
 
 @Entity()
 export default class LocalVerifiedEmail
   extends BaseEntity
   implements ILocalVerifiedEmail
 {
-  @PrimaryColumn('uuid', { update: false })
+  @OneToOne(_ => LocalUser, { primary: true, onDelete: 'CASCADE' })
+  @JoinColumn()
   userId: string
 
-  @Column({ type: 'varchar', unique: true, update: false })
+  @Column({ type: 'varchar', update: false })
   @Index({ unique: true })
   email: string
 }

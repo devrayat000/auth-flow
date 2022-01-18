@@ -8,14 +8,14 @@ export default class EmailVerification
   @PrimaryColumn('uuid', { update: false })
   _id: string
 
-  @Column({ type: 'varchar', unique: true, update: false })
-  @Index({ unique: true })
+  @Column({ type: 'varchar', update: false })
   email: string
 
-  @Column('varchar', { nullable: true })
+  @Column('varchar', { unique: true })
+  @Index({ unique: true })
   verificationToken: string
 
-  @Column('bigint', { nullable: true })
+  @Column('bigint')
   verificationTokenExpiry: number
 }
 
