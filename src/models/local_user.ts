@@ -33,7 +33,7 @@ export default class LocalUser extends BaseEntity implements ILocalUser {
   })
   fullName: string
 
-  @Column('varchar')
+  @Column('varchar', { default: 'default.png' })
   photoUrl: string
 
   @Column('date')

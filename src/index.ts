@@ -1,10 +1,12 @@
 import express from 'express'
 import cookieParser from 'cookie-parser'
 import logger from 'morgan'
-import connection from '$utils/connection'
 import session from 'express-session'
-import { cacheClient, RedisStore } from './services/cache'
+
+import connection from '$utils/connection'
+import { cacheClient, cacheStore } from '$services/cache'
 import passportApp from './passport'
+import authRouter from '$routes/auth'
 
 const app = express()
 
@@ -19,7 +21,7 @@ app.use(cookieParser(process.env.COOKIE_SECRET ?? 'super_cookie_secret'))
 app.use(
   session({
     secret: process.env.SESSION_SECRET ?? 'super_session_secret',
-    store: new RedisStore({ client: cacheClient }),
+    store: cacheStore,
     cookie: {
       secure: process.env.NODE_ENV === 'production',
       signed: process.env.NODE_ENV === 'production',
@@ -35,6 +37,8 @@ app.use(passportApp)
 app.get('/', async (req, res) => {
   res.send('Working!')
 })
+
+app.use('/auth', authRouter)
 
 async function listen() {
   await Promise.all([connection(), cacheClient.connect()])

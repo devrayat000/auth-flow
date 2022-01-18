@@ -25,6 +25,7 @@
       "$routes/*": ["./src/routes/*"],
       "$utils/*": ["./src/utils/*"],
       "$types/*": ["./src/types/*"],
+      "$services/*": ["./src/services/*"],
     },
     "typeRoots": ["./src/types/global.d.ts"]
   },

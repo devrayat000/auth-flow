@@ -1,0 +1,20 @@
+import { Router } from 'express'
+
+import { passport } from '$passport/index'
+import { loginController, registerHandler } from './controller'
+
+const localRouter = Router()
+
+localRouter.post('/register', registerHandler)
+
+localRouter.post(
+  '/login',
+  passport.authenticate('local', {
+    failureMessage: true,
+    successMessage: true,
+    session: true,
+  }),
+  loginController
+)
+
+export default localRouter

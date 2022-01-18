@@ -37,4 +37,5 @@ passport.deserializeUser<string>(async (userId, done) => {
 
 initializeLocal(passport)
 
+export { passport }
 export default passportApp
