@@ -1,4 +1,5 @@
 import AllRecipeUser from '$models/all_recipe_user'
+import EmailVerification from '$models/email_verification'
 import LocalUser, { ILocalUser } from '$models/local_user'
 import { getConnection, getManager } from 'typeorm'
 
@@ -40,4 +41,43 @@ export async function createUser(input: CreateUserInput) {
   user.recipe = rawUser.recipe
 
   return user
+}
+
+export async function createVerificationToken({
+  id,
+  email,
+  token,
+  expiration,
+}: CreateVerificationToken) {
+  // const result = await EmailVerification.upsert(
+  //   {
+  //     _id: id,
+  //     email,
+  //     verificationToken: token,
+  //     verificationTokenExpiry: expiration,
+  //   },
+  //   { conflictPaths: ['email'] }
+  // )
+
+  await getConnection()
+    .createQueryBuilder(EmailVerification, 'verification')
+    .insert()
+    .values({
+      _id: id,
+      email,
+      verificationToken: token,
+      verificationTokenExpiry: expiration,
+    })
+    .orUpdate({
+      conflict_target: ['email'],
+      overwrite: ['verification_token', 'verification_token_expiry'],
+    })
+    .execute()
+}
+
+export interface CreateVerificationToken {
+  id: string
+  email: string
+  token: string
+  expiration: number
 }

@@ -70,3 +70,6 @@ build
 # Lock files
 *.lock
 *-lock.json
+
+# Docker
+docker-data
