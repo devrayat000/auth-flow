@@ -17,3 +17,12 @@ export const registerValidator = yup.object().shape({
     }),
   password: yup.string().required().trim(),
 })
+
+export const verifyQueryParam = yup.object().shape({
+  token: yup.string().required(),
+  exp: yup
+    .number()
+    .integer()
+    .required()
+    .test(num => num! < Date.now()),
+})

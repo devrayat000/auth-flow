@@ -1,7 +1,8 @@
 import AllRecipeUser from '$models/all_recipe_user'
 import EmailVerification from '$models/email_verification'
 import LocalUser, { ILocalUser } from '$models/local_user'
-import { getConnection, getManager } from 'typeorm'
+import LocalVerifiedEmail from '$models/local_verified_emails'
+import { getConnection, QueryFailedError } from 'typeorm'
 
 type Ox<T extends object, K extends keyof T> = Omit<T, K>
 type CreateUserInput = Ox<
@@ -73,6 +74,33 @@ export async function createVerificationToken({
       overwrite: ['verification_token', 'verification_token_expiry'],
     })
     .execute()
+}
+
+export async function getVerificationToken(token: string, exp: number) {
+  const emailVerification = await getConnection()
+    .createQueryBuilder(EmailVerification, 'verification')
+    .where(
+      'verification.verification_token = :token AND verification.verification_token_expiry < :exp',
+      { token, exp }
+    )
+    .limit(1)
+    .getOne()
+  if (!emailVerification) {
+    throw new Error('Invalid token!')
+  }
+
+  return emailVerification
+}
+
+export async function createVerifiedUser(userId: string, email: string) {
+  const result = await getConnection()
+    .createQueryBuilder(LocalVerifiedEmail, 'verified')
+    .insert()
+    .values({ userId, email })
+    .returning('*')
+    .execute()
+
+  return LocalVerifiedEmail.create(result.generatedMaps[0])
 }
 
 export interface CreateVerificationToken {

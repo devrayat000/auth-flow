@@ -1,7 +1,11 @@
 import { Router } from 'express'
 
 import { passport } from '$passport/index'
-import { loginController, registerHandler } from './controller'
+import {
+  loginController,
+  registerHandler,
+  verifyController,
+} from './controller'
 
 const localRouter = Router()
 
@@ -17,7 +21,7 @@ localRouter.post(
   loginController
 )
 
-localRouter.get('/verify', async (req, res) => {})
+localRouter.get('/verify', verifyController)
 
 if (process.env.NODE_ENV !== 'production') {
   localRouter.get('/user', async (req, res) => {
