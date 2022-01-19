@@ -1,5 +1,6 @@
 import { randomBytes } from 'crypto'
 import type { RequestHandler } from 'express'
+import handler from 'express-async-handler'
 import { StatusCodes, ReasonPhrases } from 'http-status-codes'
 
 import LocalUser from '$models/local_user'
@@ -8,7 +9,7 @@ import { MyResponse } from '$utils/response'
 import { createUser, createVerificationToken } from './service'
 import { sendVerificationEmail } from '$utils/nodemailer'
 
-export const registerHandler: RequestHandler = async (req, res) => {
+export const registerHandler = handler(async (req, res) => {
   const { email, firstName, lastName, password, birthDate } =
     await registerValidator.validate(req.body)
 
@@ -50,10 +51,10 @@ export const registerHandler: RequestHandler = async (req, res) => {
       user,
     })
   )
-}
+})
 
-export const loginController: RequestHandler = async (req, res) => {
+export const loginController = handler(async (req, res) => {
   res
     .status(StatusCodes.OK)
     .json(new MyResponse(ReasonPhrases.OK, 'Successfully logged in!'))
-}
+})

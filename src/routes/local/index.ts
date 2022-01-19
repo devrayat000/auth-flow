@@ -17,8 +17,12 @@ localRouter.post(
   loginController
 )
 
-localRouter.get('/user', async (req, res) => {
-  res.json({ user: req.user })
-})
+localRouter.get('/verify', async (req, res) => {})
+
+if (process.env.NODE_ENV !== 'production') {
+  localRouter.get('/user', async (req, res) => {
+    res.json({ user: req.user })
+  })
+}
 
 export default localRouter
