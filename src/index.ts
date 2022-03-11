@@ -7,6 +7,7 @@ import connection from '$utils/connection'
 import { cacheClient, cacheStore } from '$services/cache'
 import passportApp from './passport'
 import authRouter from '$routes/auth'
+import errorHandler from './middlewares/error'
 
 const app = express()
 
@@ -14,6 +15,7 @@ const port = process.env.PORT ?? 3001
 
 app.set('port', port)
 
+app.use(errorHandler)
 app.use(logger('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
