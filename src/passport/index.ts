@@ -1,4 +1,4 @@
-import AllRecipeUser from '$models/all_recipe_user'
+import AllRecipeUser from 'src/modelsx/all_recipe_user'
 import express from 'express'
 import { Passport } from 'passport'
 import { getConnection } from 'typeorm'

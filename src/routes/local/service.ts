@@ -1,45 +1,27 @@
-import AllRecipeUser from '$models/all_recipe_user'
-import EmailVerification from '$models/email_verification'
-import LocalUser, { ILocalUser } from '$models/local_user'
-import LocalVerifiedEmail from '$models/local_verified_emails'
-import { getConnection, QueryFailedError } from 'typeorm'
+import { knex } from '$services/knex'
+import { AuthError } from '$utils/error'
+import { IAllRecipeUser, ILocalUserInsert } from 'knex/types/tables'
 
-type Ox<T extends object, K extends keyof T> = Omit<T, K>
-type CreateUserInput = Ox<
-  ILocalUser,
-  '_id' | 'createdAt' | 'updatedAt' | 'photoUrl' | 'fullName'
->
-
-export async function createUser(input: CreateUserInput) {
+export async function createUser(input: ILocalUserInsert) {
   const { email, firstName, lastName, hash, salt, birthDate } = input
 
-  const localUser = getConnection()
-    .createQueryBuilder(LocalUser, 'local')
-    .insert()
-    .values({
-      email,
-      firstName,
-      lastName,
-      hash,
-      salt,
-      birthDate,
+  const [user]: IAllRecipeUser[] = await knex
+    .with('local', qb => {
+      return qb
+        .table('local_user')
+        .insert({
+          email,
+          firstName,
+          lastName,
+          hash,
+          salt,
+          birthDate,
+        })
+        .returning(['_id'])
     })
-    .returning(['_id'])
-
-  const [rawUser] = await getConnection().manager.query(
-    /*sql*/ `
-      WITH "local" AS (
-          ${localUser.getSql()}
-      )
-      INSERT INTO "all_recipe_user"(user_id) SELECT _id FROM "local" RETURNING *;
-    `,
-    Object.values(localUser.getParameters())
-  )
-
-  const user = new AllRecipeUser()
-  user.userId = rawUser.user_id
-  user.createdAt = rawUser.created_at
-  user.recipe = rawUser.recipe
+    .from(knex.raw('?? (??)', ['all_recipe_user', 'userId']))
+    .insert(knex('local').select(['_id AS userId']))
+    .returning(['userId'])
 
   return user
 }
@@ -50,57 +32,41 @@ export async function createVerificationToken({
   token,
   expiration,
 }: CreateVerificationToken) {
-  // const result = await EmailVerification.upsert(
-  //   {
-  //     _id: id,
-  //     email,
-  //     verificationToken: token,
-  //     verificationTokenExpiry: expiration,
-  //   },
-  //   { conflictPaths: ['email'] }
-  // )
-
-  await getConnection()
-    .createQueryBuilder(EmailVerification, 'verification')
-    .insert()
-    .values({
+  await knex('email_verification')
+    .insert({
       _id: id,
       email,
       verificationToken: token,
       verificationTokenExpiry: expiration,
     })
-    .orUpdate({
-      conflict_target: ['email'],
-      overwrite: ['verification_token', 'verification_token_expiry'],
-    })
-    .execute()
+    .onConflict(['verificationToken'])
+    .merge(['verificationToken', 'verificationTokenExpiry'] as any)
 }
 
 export async function getVerificationToken(token: string, exp: number) {
-  const emailVerification = await getConnection()
-    .createQueryBuilder(EmailVerification, 'verification')
-    .where(
-      'verification.verification_token = :token AND verification.verification_token_expiry < :exp',
-      { token, exp }
-    )
+  const [emailVerification] = await knex('email_verification')
+    .select('_id', 'email', 'verificationTokenExpiry')
+    .where({ verificationToken: token })
     .limit(1)
-    .getOne()
+
   if (!emailVerification) {
-    throw new Error('Invalid token!')
+    throw new AuthError.TokenError()
+  }
+
+  if (Date.now() >= emailVerification.verificationTokenExpiry) {
+    throw new AuthError.TokenExpired()
   }
 
   return emailVerification
 }
 
 export async function createVerifiedUser(userId: string, email: string) {
-  const result = await getConnection()
-    .createQueryBuilder(LocalVerifiedEmail, 'verified')
-    .insert()
-    .values({ userId, email })
-    .returning('*')
-    .execute()
+  const insertVerified = knex('local_verified_email').insert({ userId, email })
+  const getUser = knex('all_recipe_user').where({ userId }).limit(1)
 
-  return LocalVerifiedEmail.create(result.generatedMaps[0])
+  const [[verifiedUser]] = await Promise.all([getUser, insertVerified])
+
+  return verifiedUser
 }
 
 export interface CreateVerificationToken {

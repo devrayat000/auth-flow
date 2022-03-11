@@ -3,7 +3,7 @@
     "incremental": true,
     "target": "esnext",
     "module": "esnext",
-    "rootDir": "./src",
+    "rootDir": "./",
     "outDir": "./build",
     "declaration": true,
     "declarationDir": "./build/types",
@@ -21,7 +21,7 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "$models/*": ["src/models/*"],
+      "$models/*": ["src/modelsx/*"],
       "$passport/*": ["src/passport/*"],
       "$routes/*": ["src/routes/*"],
       "$utils/*": ["src/utils/*"],

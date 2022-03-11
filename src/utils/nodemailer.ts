@@ -40,6 +40,11 @@ export async function sendVerificationEmail({
   })
 }
 
+transport.on('error', err => {
+  console.log(err.message)
+  process.exit(1)
+})
+
 export interface MailArgs {
   name: string
   to: string

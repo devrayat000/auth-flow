@@ -1,6 +1,5 @@
 import { Router } from 'express'
 
-import { passport } from '$passport/index'
 import {
   loginController,
   registerHandler,
@@ -11,15 +10,7 @@ const localRouter = Router()
 
 localRouter.post('/register', registerHandler)
 
-localRouter.post(
-  '/login',
-  passport.authenticate('local', {
-    failureMessage: true,
-    successMessage: true,
-    session: true,
-  }),
-  loginController
-)
+localRouter.post('/login', loginController)
 
 localRouter.get('/verify', verifyController)
 

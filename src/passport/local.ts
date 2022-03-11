@@ -1,5 +1,5 @@
-import AllRecipeUser from '$models/all_recipe_user'
-import LocalUser from '$models/local_user'
+import AllRecipeUser from 'src/modelsx/all_recipe_user'
+import LocalUser from 'src/modelsx/local_user'
 import _passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
 import { getConnection } from 'typeorm'

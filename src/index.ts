@@ -3,7 +3,7 @@ import cookieParser from 'cookie-parser'
 import logger from 'morgan'
 import session from 'express-session'
 
-import connection from '$utils/connection'
+// import connection from '$utils/connection'
 import { cacheClient, cacheStore } from '$services/cache'
 import passportApp from './passport'
 import authRouter from '$routes/auth'
@@ -45,7 +45,8 @@ app.get('/', async (req, res) => {
 app.use('/auth', authRouter)
 
 async function listen() {
-  await Promise.all([connection(), cacheClient.connect()])
+  // await Promise.all([connection(), cacheClient.connect()])
+  await cacheClient.connect()
 
   await new Promise<void>(r => app.listen(port, r))
 
